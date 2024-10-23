@@ -1,5 +1,3 @@
-
-
 class DirectedGraph:
     def __init__(self):
         self.adjacency_list = {}
@@ -99,6 +97,10 @@ class DirectedGraph:
         # Create compressed graph
         compressed = DirectedGraph()
         
+        # Initialize all SCC nodes
+        for i in range(len(sccs)):
+            compressed.add_vertex(i)
+        
         # Add edges between different SCCs
         for from_vertex in self.adjacency_list:
             from_scc = vertex_to_scc[from_vertex]
@@ -130,11 +132,6 @@ class DirectedGraph:
     def min_additional_routes(self, start):
         """
         Calculate minimum additional routes needed using SCC-based approach
-        
-        Steps:
-        1. Find SCCs
-        2. Compress graph based on SCCs
-        3. Count nodes with in_degree = 0 (excluding start node's SCC)
         """
         # Find SCCs
         sccs = self.find_strongly_connected_components()
@@ -145,5 +142,17 @@ class DirectedGraph:
         # Find SCC containing start vertex
         start_scc = vertex_to_scc[start]
         
-        # Count zero in-degree nodes in compressed graph
-        return compressed_graph.count_zero_indegree(start_scc)
+        # Do DFS from start_scc
+        visited = set()
+        def dfs(scc_id):
+            visited.add(scc_id)
+            for neighbor in compressed_graph.adjacency_list[scc_id]:
+                if neighbor not in visited:
+                    dfs(neighbor)
+        
+        dfs(start_scc)
+        
+        # Count unreachable SCCs
+        unreachable = sum(1 for i in range(len(sccs)) if i not in visited)
+        
+        return unreachable
