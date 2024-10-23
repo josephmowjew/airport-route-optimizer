@@ -1,32 +1,57 @@
 # Airport Route Optimizer
 
 ## Overview
-Airport Route Optimizer is a Python-based solution that helps airlines optimize their flight routes by calculating the minimum number of additional routes needed to ensure all airports in a network are reachable from a starting point. The project implements custom graph algorithms and data structures to demonstrate a deep understanding of algorithmic problem-solving.
+Airport Route Optimizer analyzes airport networks using Strongly Connected Components (SCCs) to determine the minimum number of additional routes needed for full connectivity from a starting airport.
 
 ## Problem Statement
 Given a network of airports and existing one-way flight routes, determine the minimum number of additional one-way routes needed to make all airports reachable from a designated starting airport.
 
-## Features
-- Custom implementation of fundamental data structures (Queue, Stack)
-- Custom graph traversal algorithms (DFS, BFS)
-- Route connectivity analysis
-- Minimum additional routes calculator
-- Detailed network statistics
-
 ## Technical Implementation
-The project includes three main components:
-1. **Custom Data Structures** (`data_structures.py`)
-   - Queue implementation using linked list
-   - Stack implementation using linked list
+The solution uses three key components:
 
-2. **Graph Implementation** (`graph.py`)
-   - Directed graph representation using adjacency list
-   - Custom DFS and BFS implementations
-   - Route analysis algorithms
+1. **Graph Implementation** (`graph.py`)
+   - Directed graph with adjacency list representation
+   - Kosaraju's algorithm for finding SCCs
+   - Graph compression for SCC-based analysis
+   - Minimum additional routes calculator
 
-3. **Testing Module** (`test_airport_routes.py`)
-   - Comprehensive test cases
-   - Network analysis visualization
+2. **Data Structures** (`data_structures.py`)
+   - Queue implementation
+   - Stack implementation
+
+3. **Testing** (`test_airport_routes.py`)
+   - Network analysis and visualization
+   - Sample route testing
+
+## Algorithm Details
+The solution uses a two-phase approach:
+1. Find Strongly Connected Components using Kosaraju's Algorithm
+2. Compress the graph by converting SCCs to single nodes
+3. Count nodes with zero in-degree (excluding start node's SCC)
+
+- **Time Complexity**: O(V + E)
+- **Space Complexity**: O(V)
+
+## Usage
+```bash
+python test_airport_routes.py
+```
+
+### Example Output
+```
+Airport Route Analysis
+=====================
+
+Strongly Connected Components:
+Component 0: SFO, DSM, ORD, BGI, LGA
+Component 1: JFK, ICN, HND, EWR
+Component 2: TLV, DEL, DOH, CDG, BUD, SIN
+Component 3: EYW, LHR
+Component 4: SAN
+
+Start Airport: SFO
+Minimum Additional Routes Needed: 4
+```
 
 ## Project Structure
 ```
@@ -37,58 +62,15 @@ airport-route-optimizer/
 └── test_airport_routes.py
 ```
 
-## Installation and Setup
-1. Clone the repository:
-```bash
-git clone https://github.com/josephmowjew/airport-route-optimizer.git
-cd airport-route-optimizer
-```
-
-2. No additional dependencies required - the project uses only Python standard library.
-
-## Usage
-Run the test script to analyze the airport network:
-```bash
-python test_airport_routes.py
-```
-
-### Example Output
-```
-Airport Connectivity Analysis from SFO
-==================================================
-Total Airports: 17
-Total Routes: 17
-Reachable Airports: 12
-Unreachable Airports: 5
-Minimum Additional Routes Needed: 5
-
-Currently Reachable Airports:
-BGI, BUD, CDG, DOH, DSM, LGA, ORD, SAN, SFO, SIN
-
-Currently Unreachable Airports:
-EWR, HND, ICN, JFK, TLV
-```
-
-## Algorithm Details
-- **Time Complexity**: O(V + E) where V is the number of vertices (airports) and E is the number of edges (routes)
-- **Space Complexity**: O(V) for storing visited nodes during traversal
-
-## Contributing
-1. Fork the repository
-2. Create your feature branch: `git checkout -b feature/new-feature`
-3. Commit your changes: `git commit -am 'Add new feature'`
-4. Push to the branch: `git push origin feature/new-feature`
-5. Submit a pull request
+## Installation
+No external dependencies required - uses Python standard library only.
 
 ## Future Enhancements
-- Add support for weighted edges (route costs/distances)
-- Implement multiple starting points analysis
-- Add visualization of the route network
-- Include route optimization based on additional constraints
-- Add support for bidirectional routes analysis
-
-## License
-[]
+- Route cost optimization
+- Multiple starting points
+- Network visualization
+- Real-time route updates
+- Route capacity constraints
 
 ## Author
 Joseph Mojoo
