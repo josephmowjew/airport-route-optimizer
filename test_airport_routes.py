@@ -1,38 +1,47 @@
+# test_airport_routes.py
+
 from graph import DirectedGraph
 
 def test_airport_routes():
     # Initialize graph
-    airport_graph = DirectedGraph()
+    graph = DirectedGraph()
     
     # Add routes from the diagram
     routes = [
-        ("DSM", "ORD"), ("ORD", "BGI"), ("BGI", "LGA"), ("JFK", "LGA"),
-        ("JFK", "ICN"), ("HND", "ICN"), ("EWR", "HND"), ("TLV", "DEL"),
-        ("DEL", "DOH"), ("DEL", "CDG"), ("CDG", "BUD"), ("CDG", "SIN"),
-        ("SFO", "SAN"), ("SFO", "DSM"), ("EYW", "LHR"), ("LHR", "SFO"),
-        ("EYW", "SAN")
+        ("DSM", "ORD"), ("ORD", "BGI"), ("BGI", "LGA"), ("LGA", "DSM"),  # Cycle 1
+        ("JFK", "ICN"), ("ICN", "HND"), ("HND", "EWR"), ("EWR", "JFK"),  # Cycle 2
+        ("TLV", "DEL"), ("DEL", "DOH"), ("DOH", "CDG"), ("CDG", "BUD"), 
+        ("BUD", "TLV"), ("CDG", "SIN"), ("SIN", "TLV"),  # Cycle 3
+        ("SFO", "SAN"), ("SFO", "DSM"), ("EYW", "LHR"), ("LHR", "EYW"),  # Cycle 4
+        ("SAN", "SFO")  # Make SFO-SAN a cycle
     ]
     
     # Add all routes to graph
     for origin, destination in routes:
-        airport_graph.add_edge(origin, destination)
+        graph.add_edge(origin, destination)
     
-    # Test connectivity from SFO
+    # Find SCCs
+    sccs = graph.find_strongly_connected_components()
+    
+    # Start airport
     start_airport = "SFO"
-    stats = airport_graph.calculate_connectivity_stats(start_airport)
     
-    # Print results
-    print(f"\nAirport Connectivity Analysis from {start_airport}")
-    print("="*50)
-    print(f"Total Airports: {stats['total_vertices']}")
-    print(f"Total Routes: {stats['total_edges']}")
-    print(f"Reachable Airports: {stats['reachable_count']}")
-    print(f"Unreachable Airports: {stats['unreachable_count']}")
-    print(f"\nMinimum Additional Routes Needed: {airport_graph.min_additional_routes(start_airport)}")
-    print("\nCurrently Reachable Airports:")
-    print(", ".join(stats['reachable_vertices']))
-    print("\nCurrently Unreachable Airports:")
-    print(", ".join(stats['unreachable_vertices']))
+    print("\nAirport Route Analysis")
+    print("=====================")
+    
+    # Print SCCs
+    print("\nStrongly Connected Components:")
+    for i, scc in enumerate(sccs):
+        print(f"Component {i}: {', '.join(scc)}")
+    
+    # Get compressed graph
+    compressed_graph, vertex_to_scc = graph.compress_graph(sccs)
+    
+    # Calculate minimum additional routes
+    min_routes = graph.min_additional_routes(start_airport)
+    
+    print(f"\nStart Airport: {start_airport}")
+    print(f"Minimum Additional Routes Needed: {min_routes}")
 
 if __name__ == "__main__":
     test_airport_routes()
